@@ -10,7 +10,8 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin{
+class _ProfilePageState extends State<ProfilePage>
+    with TickerProviderStateMixin {
   AnimationController _animationController;
 
   double _containerPaddingLeft = 20.0;
@@ -270,90 +271,117 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                       ),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Center(
-                      child: GestureDetector(
-                          onTap: () {
-                            _animationController.forward();
-                            Future.delayed(Duration(seconds: 2), () {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => ThisApp()));
-                            });
-                          },
-                          child: AnimatedContainer(
-                              decoration: BoxDecoration(
-                                color: _color,
-                                borderRadius: BorderRadius.circular(100.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: _color,
-                                    blurRadius: 21, // soften the shadow
-                                    spreadRadius: -15, //end the shadow
-                                    offset: Offset(
-                                      0.0, // Move to right 10  horizontally
-                                      20.0, // Move to bottom 10 Vertically
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Center(
+                        child: GestureDetector(
+                            onTap: () {
+                              _animationController.forward();
+                              Future.delayed(Duration(seconds: 2), () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => ThisApp()));
+                              });
+                            },
+                            child: AnimatedContainer(
+                                decoration: BoxDecoration(
+                                  color: _color,
+                                  borderRadius: BorderRadius.circular(100.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: _color,
+                                      blurRadius: 21, // soften the shadow
+                                      spreadRadius: -15, //end the shadow
+                                      offset: Offset(
+                                        0.0, // Move to right 10  horizontally
+                                        20.0, // Move to bottom 10 Vertically
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                padding: EdgeInsets.only(
+                                    left: _containerPaddingLeft,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                duration: Duration(milliseconds: 400),
+                                curve: Curves.easeOutCubic,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    (!sent)
+                                        ? AnimatedContainer(
+                                            duration:
+                                                Duration(milliseconds: 400),
+                                            child: Icon(
+                                              Icons.cloud_upload,
+                                              color: AppTheme.white,
+                                            ),
+                                            curve: Curves.fastOutSlowIn,
+                                            transform:
+                                                Matrix4.translationValues(
+                                                    _translateX, _translateY, 0)
+                                                  ..rotateZ(_rotate)
+                                                  ..scale(_scale),
+                                          )
+                                        : Container(),
+                                    AnimatedSize(
+                                      vsync: this,
+                                      duration: Duration(milliseconds: 600),
+                                      child: show
+                                          ? SizedBox(width: 10.0)
+                                          : Container(),
                                     ),
-                                  )
-                                ],
-                              ),
-                              padding: EdgeInsets.only(
-                                  left: _containerPaddingLeft,
-                                  right: 20.0,
-                                  top: 10.0,
-                                  bottom: 10.0),
-                              duration: Duration(milliseconds: 400),
-                              curve: Curves.easeOutCubic,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  (!sent)
-                                      ? AnimatedContainer(
-                                    duration: Duration(milliseconds: 400),
-                                    child: Icon(Icons.cloud_upload,color: AppTheme.white,),
-                                    curve: Curves.fastOutSlowIn,
-                                    transform: Matrix4.translationValues(
-                                        _translateX, _translateY, 0)
-                                      ..rotateZ(_rotate)
-                                      ..scale(_scale),
-                                  )
-                                      : Container(),
-                                  AnimatedSize(
-                                    vsync: this,
-                                    duration: Duration(milliseconds: 600),
-                                    child: show ? SizedBox(width: 10.0) : Container(),
-                                  ),
-                                  AnimatedSize(
-                                    vsync: this,
-                                    duration: Duration(milliseconds: 200),
-                                    child: show ? Text("Upload",style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),) : Container(),
-                                  ),
-                                  AnimatedSize(
-                                    vsync: this,
-                                    duration: Duration(milliseconds: 200),
-                                    child: sent ? Icon(Icons.done,color: AppTheme.white,) : Container(),
-                                  ),
-                                  AnimatedSize(
-                                    vsync: this,
-                                    alignment: Alignment.topLeft,
-                                    duration: Duration(milliseconds: 600),
-                                    child: sent ? SizedBox(width: 10.0) : Container(),
-                                  ),
-                                  AnimatedSize(
-                                    vsync: this,
-                                    duration: Duration(milliseconds: 200),
-                                    child: sent ? Text("Done",style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),) : Container(),
-                                  ),
-                                ],
-                              )))),
-                )
+                                    AnimatedSize(
+                                      vsync: this,
+                                      duration: Duration(milliseconds: 200),
+                                      child: show
+                                          ? Text(
+                                              "Upload",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          : Container(),
+                                    ),
+                                    AnimatedSize(
+                                      vsync: this,
+                                      duration: Duration(milliseconds: 200),
+                                      child: sent
+                                          ? Icon(
+                                              Icons.done,
+                                              color: AppTheme.white,
+                                            )
+                                          : Container(),
+                                    ),
+                                    AnimatedSize(
+                                      vsync: this,
+                                      alignment: Alignment.topLeft,
+                                      duration: Duration(milliseconds: 600),
+                                      child: sent
+                                          ? SizedBox(width: 10.0)
+                                          : Container(),
+                                    ),
+                                    AnimatedSize(
+                                      vsync: this,
+                                      duration: Duration(milliseconds: 200),
+                                      child: sent
+                                          ? Text(
+                                              "Done",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          : Container(),
+                                    ),
+                                  ],
+                                )))),
+                  )
                 ],
               ),
             )
