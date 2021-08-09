@@ -34,8 +34,7 @@ class _Screen4State extends State<Screen4> {
   Widget appBar() {
     return SizedBox(
       height: AppBar().preferredSize.height,
-      child: Expanded(
-        child: Center(
+      child: Center(
           child: Padding(
             padding: EdgeInsets.only(top: 8),
             child: Text(
@@ -48,7 +47,6 @@ class _Screen4State extends State<Screen4> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
