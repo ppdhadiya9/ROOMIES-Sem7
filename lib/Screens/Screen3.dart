@@ -34,8 +34,7 @@ class _Screen3State extends State<Screen3> {
   Widget appBar() {
     return SizedBox(
       height: AppBar().preferredSize.height,
-      child: Expanded(
-        child: Center(
+      child: Center(
           child: Padding(
             padding: EdgeInsets.only(top: 8),
             child: Text(
