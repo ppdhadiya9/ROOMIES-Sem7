@@ -23,6 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_core: 
+  firebase_auth: 
+  cloud_firestore: 
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -33,16 +36,41 @@ dependencies:
   flutter_neumorphic: ^3.0.4+1
   carousel_slider: ^3.0.0
   intl: ^0.16.1
+  image_picker :
+  multi_image_picker:
+  firebase_storage :
+  flutter_absolute_path: 
+  flutter_signin_button: 
+  toast: 
+  flutter_open_whatsapp:
+  shared_preferences: 
+  flutter_local_notifications: 
+  path_provider: 
+  google_sign_in:
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: 
+  flutter_native_splash: 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/appIcon.png"
+
+flutter_native_splash:
+  color: "#396aad"
+  image: assets/images/SplashIcon.png
+  android: true
+  ios: true
+  #android_gravity: fill
+  #ios_content_mode: scaleAspectFill 
 flutter:
 
   # The following line ensures that the Material Icons font is
