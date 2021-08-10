@@ -32,7 +32,7 @@ class _Screen2State extends State<Screen2> {
     );
   }
 
-  Widget appBar() {
+    Widget appBar() {
     return SizedBox(
       height: AppBar().preferredSize.height,
       child: Center(

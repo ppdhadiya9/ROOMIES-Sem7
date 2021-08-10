@@ -1,13 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/login_signup/Login.dart';
+import 'package:flutter_app/login_signup/Login_Screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app_theme.dart';
 
 class HomeDrawer extends StatefulWidget {
-  const HomeDrawer(
-      {@required this.screenIndex,
-        @required this.iconAnimationController,
-        @required this.callBackIndex,});
-
+  const HomeDrawer({
+    @required this.screenIndex,
+    @required this.iconAnimationController,
+    @required this.callBackIndex,
+  });
 
   final AnimationController iconAnimationController;
   final DrawerIndex screenIndex;
@@ -18,11 +23,25 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
+  FirebaseAuth _auth2 = FirebaseAuth.instance;
+
+  User user;
+  var x;
+  var y;
+  var z;
+
   List<DrawerList> drawerList;
   @override
   void initState() {
+    user = _auth2.currentUser;
+    x = user.email;
+    y = user.displayName;
+    z = user.uid;
     super.initState();
     setDrawerListArray();
+    print(
+        "--------------------------------------------------------------------------");
+    print(y);
   }
 
   void setDrawerListArray() {
@@ -79,11 +98,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             1.0 - (widget.iconAnimationController.value) * 0.2),
                         child: RotationTransition(
                           turns: AlwaysStoppedAnimation<double>(Tween<double>(
-                              begin: 0.0, end: 24.0)
-                              .animate(CurvedAnimation(
-                              parent: widget.iconAnimationController,
-                              curve: Curves.fastOutSlowIn))
-                              .value /
+                                      begin: 0.0, end: 24.0)
+                                  .animate(CurvedAnimation(
+                                      parent: widget.iconAnimationController,
+                                      curve: Curves.fastOutSlowIn))
+                                  .value /
                               360),
                           child: Container(
                             height: 120,
@@ -99,7 +118,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             ),
                             child: ClipRRect(
                               borderRadius:
-                              const BorderRadius.all(Radius.circular(60.0)),
+                                  const BorderRadius.all(Radius.circular(60.0)),
                               child: Image.asset('assets/images/userImage.png'),
                             ),
                           ),
@@ -163,7 +182,23 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       Icons.power_settings_new,
                       color: Colors.red,
                     ),
-                    onTap: () {},
+                    onTap: () async {
+                      ///SharedPreferences prefs;
+                      ////await GoogleSignIn().signOut();
+                      await FirebaseAuth.instance
+                          .signOut()
+                          .then((value) async => {
+                                /// prefs =
+                                ///await SharedPreferences.getInstance(),
+                                ///prefs.remove('email'),
+                              });
+
+                      ///Navigator.of(context).pop(true);
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => loginscreen()));
+                    },
                   ),
                 ),
               ),
