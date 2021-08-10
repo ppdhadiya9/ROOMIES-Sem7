@@ -40,11 +40,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget appBar() {
+ Widget appBar() {
     return SizedBox(
       height: AppBar().preferredSize.height,
-      child: Expanded(
-        child: Center(
+      child: Center(
           child: Padding(
             padding: EdgeInsets.only(top: 8),
             child: Text(
@@ -57,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
