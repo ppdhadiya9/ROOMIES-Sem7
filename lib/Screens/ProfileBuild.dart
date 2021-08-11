@@ -104,17 +104,12 @@ class _ProfilePageState extends State<ProfilePage>
           .ref()
           .child('/Userphoto/$fileName2');
       var profile_id = await firebaseStorageRef2.getDownloadURL();
-      
-          'Mobno': '$_mobno',
-          'Email': '$_email',
-          'Address': '$_address',
-          'Gender': '$_gender',
-          'Dob': '$_dob',
           'Room_doc_id': '$_room_doc_id',
           'Profile_Photo_Url': '$profile_id',
 */
+      print(_username);
       var x = user.uid;
-      user.updateProfile(displayName: _userame);
+      user.updateProfile(displayName: _username);
 
       CollectionReference col = db.collection('/Users');
       Future<void> adduser() {
@@ -123,11 +118,13 @@ class _ProfilePageState extends State<ProfilePage>
           'userid': '$x',
           'Username': '$_username',
           'Fullname': '$_fullName',
+          'Mobno': '$_mobno',
+          'Email': '$_email',
+          'Address': '$_address',
+          'Gender': '$_gender',
+          'Dob': '$_dob',
         });
       }
-
-      ScaffoldMessenger.of(this.context)
-          .showSnackBar(SnackBar(content: Text('Successfully added.......')));
 
       await adduser().whenComplete(() => Navigator.pushReplacement(
           this.context, MaterialPageRoute(builder: (context) => ThisApp())));
@@ -201,23 +198,12 @@ class _ProfilePageState extends State<ProfilePage>
                 child: ListView(
                   shrinkWrap: true,
                   children: [
-                    TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: InputDecoration(
-                          labelText: "Enter Your Username Here...",
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: Colors.black,
-                          ),
-                        ),
-                        validator: commonValidation,
-                        onChanged: (value) {
-                          setState(() {
-                            _username = value.trim();
-                          });
-                        }),
                     textField(
-                      ValueTobeValidate: _username,
+                      callback: (value) {
+                        setState(() {
+                          _username = value;
+                        });
+                      },
                       hintText: 'UserName',
                       padding: 15.0,
                       icon: Icon(
@@ -228,7 +214,11 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.text,
                     ),
                     textField(
-                      ValueTobeValidate: _fullName,
+                       callback: (value) {
+                        setState(() {
+                          _fullName = value;
+                        });
+                      },
                       hintText: 'FullName',
                       padding: 15.0,
                       icon: Icon(
@@ -239,7 +229,11 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.text,
                     ),
                     textField(
-                      ValueTobeValidate: _mobno,
+                       callback: (value) {
+                        setState(() {
+                          _mobno = value;
+                        });
+                      },
                       hintText: 'Mobile Number',
                       padding: 15.0,
                       icon: Icon(
@@ -250,7 +244,11 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.number,
                     ),
                     textField(
-                      ValueTobeValidate: _address,
+                       callback: (value) {
+                        setState(() {
+                          _address = value;
+                        });
+                      },
                       hintText: 'Address',
                       padding: 15.0,
                       icon: Icon(
@@ -510,8 +508,6 @@ class _ProfilePageState extends State<ProfilePage>
   Future uploadPic(BuildContext context) async {
     String fileName = DateTime.now().toString();
     // basename(_image.path);
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Please Wait...')));
 
     firebase_storage.Reference firebaseStorageRef = firebase_storage
         .FirebaseStorage.instance
@@ -524,38 +520,32 @@ class _ProfilePageState extends State<ProfilePage>
 
     setState(() {
       print("Profile Picture uploaded");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile Details will be Uploaded')));
     });
   }
 }
 
-class textField extends StatefulWidget {
+class textField extends StatelessWidget {
   final String hintText;
   final Icon icon;
   final padding;
   final TextInputType type;
   var ValueTobeValidate;
+  final Function callback;
 
   textField(
       {@required this.hintText,
       this.icon,
       this.padding,
       this.type,
-      this.ValueTobeValidate});
+      this.ValueTobeValidate,
+      this.callback});
 
-  @override
-  _textFieldState createState() => _textFieldState();
-}
-
-class _textFieldState extends State<textField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(widget.padding),
+      padding: EdgeInsets.all(padding),
       child: TextFormField(
-        keyboardType: widget.type,
+        keyboardType: type,
         validator: commonValidation,
         style: TextStyle(
           fontSize: 16,
@@ -569,8 +559,8 @@ class _textFieldState extends State<textField> {
             borderSide: BorderSide(
                 width: 0, style: BorderStyle.solid, color: Colors.black),
           ),
-          icon: widget.icon,
-          hintText: widget.hintText,
+          icon: icon,
+          hintText: hintText,
           hintStyle: TextStyle(
             fontSize: 16,
             color: Colors.white,
@@ -587,11 +577,7 @@ class _textFieldState extends State<textField> {
           fillColor: Colors.blueAccent,
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         ),
-        onChanged: (value) {
-          setState(() {
-            widget.ValueTobeValidate = value.trim();
-          });
-        },
+        onChanged: callback,
       ),
     );
   }
