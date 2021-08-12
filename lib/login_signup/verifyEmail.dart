@@ -53,7 +53,7 @@ class _VerifyscreenState extends State<Verifyscreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                  "Hello !!! \nPlease Verify Your Email First .......\nEmail sent on ${user.email}"),
+                  "Welcome !!! \nPlease Verify Your Email First .......\nEmail sent on ${user.email}"),
             ),
           ],
         ),

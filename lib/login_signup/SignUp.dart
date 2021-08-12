@@ -5,6 +5,8 @@ import 'package:flutter_app/Constants.dart';
 import 'package:flutter_app/Screens/ProfileBuild.dart';
 import 'package:flutter_app/login_signup/verifyEmail.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -77,7 +79,7 @@ class _SignUpState extends State<SignUp> {
               children: [
                 TextFormField(
                   decoration: InputDecoration(
-                    hintText: 'Enter Email / Username',
+                    hintText: 'Enter Email',
                     hintStyle: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -168,16 +170,12 @@ class _SignUpState extends State<SignUp> {
                           password: _userEnteredPassword,
                         );
                         User user = result.user;
-                        //user.updateProfile(displayName: _name);
-                        //added this line
                       }
 
-                      //SharedPreferences prefs;
+                      SharedPreferences prefs;
                       registerWithEmailAndPassword().then((_) async => {
-                            //prefs = await SharedPreferences
-                            // .getInstance(),
-                            // prefs.setString(
-                            // 'email', _emailsignup),
+                            prefs = await SharedPreferences.getInstance(),
+                            prefs.setString('email', _userEnteredEmail),
                             setState(() {
                               loadProgress();
                               Navigator.of(context).pop(true);
@@ -265,10 +263,45 @@ class _SignUpState extends State<SignUp> {
             SizedBox(
               width: 24,
             ),
-            Icon(
-              Entypo.google__with_circle,
-              size: 32,
-              color: Colors.blueAccent,
+            GestureDetector(
+              onTap: () async {
+                try {
+                  final GoogleSignInAccount googleuser =
+                      await GoogleSignIn().signIn();
+                  print(googleuser);
+                  if (googleuser != null) {
+                    final GoogleSignInAuthentication googleauth =
+                        await googleuser.authentication;
+                    print(googleauth);
+                    final GoogleAuthCredential credential =
+                        GoogleAuthProvider.credential(
+                      idToken: googleauth.idToken,
+                      accessToken: googleauth.accessToken,
+                    );
+                    print(credential);
+                    SharedPreferences prefs;
+                    UserCredential usercreds =
+                        (await _auth.signInWithCredential(credential)
+                            // ignore: missing_return
+                            .then((value) async {
+                      prefs = await SharedPreferences.getInstance();
+                      prefs.setString(
+                          'email', FirebaseAuth.instance.currentUser.email);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage()));
+                    }));
+                  }
+                } catch (e) {
+                  print(e);
+                }
+              },
+              child: Icon(
+                Entypo.google__with_circle,
+                size: 32,
+                color: Colors.blueAccent,
+              ),
             ),
           ],
         )

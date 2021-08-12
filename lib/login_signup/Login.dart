@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/Constants.dart';
 import 'package:flutter_app/app_theme.dart';
 import 'package:flutter_app/main2.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -168,15 +169,14 @@ class _LoginState extends State<Login> {
               GestureDetector(
                 onTap: () async {
                   if (formkey.currentState.validate()) {
-                    //SharedPreferences prefs;
+                    SharedPreferences prefs;
                     _auth
                         .signInWithEmailAndPassword(
                             email: _UserEnteredEmail,
                             password: _UserEnteredPassword)
                         .then((_) async => {
-                              //prefs = await SharedPreferences
-                              // .getInstance(),
-                              // prefs.setString('email', _email),
+                              prefs = await SharedPreferences.getInstance(),
+                              prefs.setString('email', _UserEnteredEmail),
                               setState(() {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                     content: Text(
@@ -236,7 +236,63 @@ class _LoginState extends State<Login> {
                 height: 16,
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  final Val = await showDialog<bool>(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: Text(
+                              "Do you want to reset your password?\nif yes then make sure you provide your email for verification \nContinue?"),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('No'),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                            TextButton(
+                              child: Text(
+                                'Yes',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              onPressed: () async {
+                                if (_UserEnteredEmail != null &&
+                                    _UserEnteredEmail != '' &&
+                                    emailValidatorRegExp
+                                        .hasMatch(_UserEnteredEmail)) {
+                                  _auth.sendPasswordResetEmail(
+                                      email: _UserEnteredEmail);
+                                  setState(() {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Password Reset Email Sent.....')));
+                                  });
+                                  Navigator.of(context).pop(true);
+                                } else {
+                                  Navigator.of(context).pop(true);
+                                  setState(() {
+                                    if (_UserEnteredEmail == null &&
+                                        _UserEnteredEmail == '') {
+                                      ScaffoldMessenger.of(this.context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Please enter your email....')));
+                                    } else if (!emailValidatorRegExp
+                                        .hasMatch(_UserEnteredEmail)) {
+                                      ScaffoldMessenger.of(this.context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Please Enter Valid Email')));
+                                    }
+                                  });
+                                }
+                              },
+                            ),
+                          ],
+                        );
+                      });
+                },
                 child: Text(
                   "FORGOT PASSWORD?",
                   style: TextStyle(

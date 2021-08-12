@@ -43,22 +43,16 @@ class _ProfilePageState extends State<ProfilePage>
   User user;
   // ignore: unused_field
   String _email,
-      // ignore: unused_field
-      _password,
-      // ignore: unused_field
       _userid,
-      // ignore: unused_field
       _fullName,
-      // ignore: unused_field
-
       _address,
       _gender,
       _dob,
       _username,
       _mobno,
-      _userame,
       _room_doc_id;
   var _profile_id;
+
   PickedFile _image;
   GlobalKey<FormState> profileBuildingFormkey = GlobalKey<FormState>();
 
@@ -95,26 +89,10 @@ class _ProfilePageState extends State<ProfilePage>
     if (profileBuildingFormkey.currentState.validate()) {
       profileBuildingFormkey.currentState.save();
 
-      //it will adding the users with same authentication
-      /* await uploadPic(this.context);
-      String fileName2 = DateTime.now().toString(); //basename(_image.path);
+      await upload_image();
 
-      firebase_storage.Reference firebaseStorageRef2 = firebase_storage
-          .FirebaseStorage.instance
-          .ref()
-          .child('/Userphoto/$fileName2');
-      var profile_id = await firebaseStorageRef2.getDownloadURL();
-      
-          'Mobno': '$_mobno',
-          'Email': '$_email',
-          'Address': '$_address',
-          'Gender': '$_gender',
-          'Dob': '$_dob',
-          'Room_doc_id': '$_room_doc_id',
-          'Profile_Photo_Url': '$profile_id',
-*/
       var x = user.uid;
-      user.updateProfile(displayName: _userame);
+      await user.updateProfile(displayName: _username, photoURL: _profile_id);
 
       CollectionReference col = db.collection('/Users');
       Future<void> adduser() {
@@ -123,6 +101,13 @@ class _ProfilePageState extends State<ProfilePage>
           'userid': '$x',
           'Username': '$_username',
           'Fullname': '$_fullName',
+          'Mobno': '$_mobno',
+          'Email': '$_email',
+          'Address': '$_address',
+          'Gender': '$_gender',
+          'Dob': '$_dob',
+          'Room_doc_id': 'null',
+          'Profile_Photo_Url': '$_profile_id',
         });
       }
 
@@ -131,6 +116,31 @@ class _ProfilePageState extends State<ProfilePage>
 
       await adduser().whenComplete(() => Navigator.pushReplacement(
           this.context, MaterialPageRoute(builder: (context) => ThisApp())));
+    }
+  }
+
+  Future upload_image() async {
+    if (_image == null) {
+      _image =
+          await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+    }
+
+    var file = i.File(_image.path);
+    String imagename = DateTime.now().toString();
+    if (_image != null) {
+      //Upload to Firebase
+      var snapshot = await firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('/Userphoto/$imagename')
+          .putFile(file);
+
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+      setState(() {
+        _profile_id = downloadUrl;
+      });
+    } else {
+      ScaffoldMessenger.of(this.context)
+          .showSnackBar(SnackBar(content: Text('Image is not choosen.......')));
     }
   }
 
@@ -201,23 +211,12 @@ class _ProfilePageState extends State<ProfilePage>
                 child: ListView(
                   shrinkWrap: true,
                   children: [
-                    TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        decoration: InputDecoration(
-                          labelText: "Enter Your Username Here...",
-                          prefixIcon: Icon(
-                            Icons.lock,
-                            color: Colors.black,
-                          ),
-                        ),
-                        validator: commonValidation,
-                        onChanged: (value) {
-                          setState(() {
-                            _username = value.trim();
-                          });
-                        }),
                     textField(
-                      ValueTobeValidate: _username,
+                      callback: (value) {
+                        setState(() {
+                          _username = value;
+                        });
+                      },
                       hintText: 'UserName',
                       padding: 15.0,
                       icon: Icon(
@@ -228,7 +227,11 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.text,
                     ),
                     textField(
-                      ValueTobeValidate: _fullName,
+                      callback: (value) {
+                        setState(() {
+                          _fullName = value;
+                        });
+                      },
                       hintText: 'FullName',
                       padding: 15.0,
                       icon: Icon(
@@ -239,7 +242,11 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.text,
                     ),
                     textField(
-                      ValueTobeValidate: _mobno,
+                      callback: (value) {
+                        setState(() {
+                          _mobno = value;
+                        });
+                      },
                       hintText: 'Mobile Number',
                       padding: 15.0,
                       icon: Icon(
@@ -250,7 +257,11 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.number,
                     ),
                     textField(
-                      ValueTobeValidate: _address,
+                      callback: (value) {
+                        setState(() {
+                          _address = value;
+                        });
+                      },
                       hintText: 'Address',
                       padding: 15.0,
                       icon: Icon(
@@ -275,7 +286,18 @@ class _ProfilePageState extends State<ProfilePage>
                               .then((date) {
                             setState(() {
                               datetime = date;
-                              _dob = DateFormat('dd-MM-yyyy').format(datetime);
+                              if (datetime.isBefore(DateTime.now())) {
+                                _dob =
+                                    DateFormat('dd-MM-yyyy').format(datetime);
+                              } else {
+                                _dob = DateFormat('dd-MM-yyyy')
+                                    .format(DateTime.now());
+
+                                ScaffoldMessenger.of(this.context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Your date selection is wrong....')));
+                              }
                             });
                           });
                         },
@@ -506,56 +528,28 @@ class _ProfilePageState extends State<ProfilePage>
       print('Image Path $_image');
     });
   }
-
-  Future uploadPic(BuildContext context) async {
-    String fileName = DateTime.now().toString();
-    // basename(_image.path);
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Please Wait...')));
-
-    firebase_storage.Reference firebaseStorageRef = firebase_storage
-        .FirebaseStorage.instance
-        .ref()
-        .child('/Userphoto/$fileName');
-
-    firebase_storage.UploadTask uploadTask =
-        firebaseStorageRef.putFile(i.File(_image.path));
-    firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
-
-    setState(() {
-      print("Profile Picture uploaded");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile Details will be Uploaded')));
-    });
-  }
 }
 
-class textField extends StatefulWidget {
+class textField extends StatelessWidget {
   final String hintText;
   final Icon icon;
   final padding;
   final TextInputType type;
-  var ValueTobeValidate;
+  final Function callback;
 
   textField(
       {@required this.hintText,
       this.icon,
       this.padding,
       this.type,
-      this.ValueTobeValidate});
+      this.callback});
 
-  @override
-  _textFieldState createState() => _textFieldState();
-}
-
-class _textFieldState extends State<textField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(widget.padding),
+      padding: EdgeInsets.all(padding),
       child: TextFormField(
-        keyboardType: widget.type,
+        keyboardType: type,
         validator: commonValidation,
         style: TextStyle(
           fontSize: 16,
@@ -569,8 +563,8 @@ class _textFieldState extends State<textField> {
             borderSide: BorderSide(
                 width: 0, style: BorderStyle.solid, color: Colors.black),
           ),
-          icon: widget.icon,
-          hintText: widget.hintText,
+          icon: icon,
+          hintText: hintText,
           hintStyle: TextStyle(
             fontSize: 16,
             color: Colors.white,
@@ -587,11 +581,7 @@ class _textFieldState extends State<textField> {
           fillColor: Colors.blueAccent,
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         ),
-        onChanged: (value) {
-          setState(() {
-            widget.ValueTobeValidate = value.trim();
-          });
-        },
+        onChanged: callback,
       ),
     );
   }
