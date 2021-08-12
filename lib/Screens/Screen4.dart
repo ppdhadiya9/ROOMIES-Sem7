@@ -38,10 +38,18 @@ class _Screen4State extends State<Screen4> {
               fontSize: 22,
               color: AppTheme.darkText,
               fontWeight: FontWeight.w700,
+          child: Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Text(
+              'ROOMIES',
+              style: TextStyle(
+                fontSize: 22,
+                color: AppTheme.darkText,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
