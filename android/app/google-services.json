@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "874574966406",
+    "project_id": "roomiesapp-3d95a",
+    "storage_bucket": "roomiesapp-3d95a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874574966406:android:fe5a975bd72c43639beb07",
+        "android_client_info": {
+          "package_name": "com.parth.flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874574966406-9p2engsmfdqrfh29678gqu9bf89p72oj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.parth.flutter_app",
+            "certificate_hash": "a94cc3bc9b840e86b5bbba03a5f2342f302e43f3"
+          }
+        },
+        {
+          "client_id": "874574966406-23qh0iaivf36ndhh698ltu48hvchvc69.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgw9X0zUOFdx9MLQyb3B2EfTIYfc1sRG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "874574966406-23qh0iaivf36ndhh698ltu48hvchvc69.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
