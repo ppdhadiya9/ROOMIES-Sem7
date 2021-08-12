@@ -43,22 +43,16 @@ class _ProfilePageState extends State<ProfilePage>
   User user;
   // ignore: unused_field
   String _email,
-      // ignore: unused_field
-      _password,
-      // ignore: unused_field
       _userid,
-      // ignore: unused_field
       _fullName,
-      // ignore: unused_field
-
       _address,
       _gender,
       _dob,
       _username,
       _mobno,
-      _userame,
       _room_doc_id;
   var _profile_id;
+
   PickedFile _image;
   GlobalKey<FormState> profileBuildingFormkey = GlobalKey<FormState>();
 
@@ -95,9 +89,9 @@ class _ProfilePageState extends State<ProfilePage>
     if (profileBuildingFormkey.currentState.validate()) {
       profileBuildingFormkey.currentState.save();
 
-      //it will adding the users with same authentication
-      /* await uploadPic(this.context);
-      String fileName2 = DateTime.now().toString(); //basename(_image.path);
+      await upload_image();
+      var x = user.uid;
+      await user.updateProfile(displayName: _username, photoURL: _profile_id);
 
       firebase_storage.Reference firebaseStorageRef2 = firebase_storage
           .FirebaseStorage.instance
@@ -106,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage>
       var profile_id = await firebaseStorageRef2.getDownloadURL();
           'Room_doc_id': '$_room_doc_id',
           'Profile_Photo_Url': '$profile_id',
-*/
+
       print(_username);
       var x = user.uid;
       user.updateProfile(displayName: _username);
@@ -123,11 +117,38 @@ class _ProfilePageState extends State<ProfilePage>
           'Address': '$_address',
           'Gender': '$_gender',
           'Dob': '$_dob',
+          'Room_doc_id': 'null',
+          'Profile_Photo_Url': '$_profile_id',
         });
       }
 
       await adduser().whenComplete(() => Navigator.pushReplacement(
           this.context, MaterialPageRoute(builder: (context) => ThisApp())));
+    }
+  }
+
+  Future upload_image() async {
+    if (_image == null) {
+      _image =
+          await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+    }
+
+    var file = i.File(_image.path);
+    String imagename = DateTime.now().toString();
+    if (_image != null) {
+      //Upload to Firebase
+      var snapshot = await firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('/Userphoto/$imagename')
+          .putFile(file);
+
+      var downloadUrl = await snapshot.ref.getDownloadURL();
+      setState(() {
+        _profile_id = downloadUrl;
+      });
+    } else {
+      ScaffoldMessenger.of(this.context)
+          .showSnackBar(SnackBar(content: Text('Image is not choosen.......')));
     }
   }
 
@@ -214,6 +235,7 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.text,
                     ),
                     textField(
+                      callback: (value) {
                        callback: (value) {
                         setState(() {
                           _fullName = value;
@@ -229,6 +251,7 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.text,
                     ),
                     textField(
+                      callback: (value) {
                        callback: (value) {
                         setState(() {
                           _mobno = value;
@@ -244,6 +267,7 @@ class _ProfilePageState extends State<ProfilePage>
                       type: TextInputType.number,
                     ),
                     textField(
+                      callback: (value) {
                        callback: (value) {
                         setState(() {
                           _address = value;
@@ -273,7 +297,18 @@ class _ProfilePageState extends State<ProfilePage>
                               .then((date) {
                             setState(() {
                               datetime = date;
-                              _dob = DateFormat('dd-MM-yyyy').format(datetime);
+                              if (datetime.isBefore(DateTime.now())) {
+                                _dob =
+                                    DateFormat('dd-MM-yyyy').format(datetime);
+                              } else {
+                                _dob = DateFormat('dd-MM-yyyy')
+                                    .format(DateTime.now());
+
+                                ScaffoldMessenger.of(this.context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Your date selection is wrong....')));
+                              }
                             });
                           });
                         },
@@ -505,6 +540,7 @@ class _ProfilePageState extends State<ProfilePage>
     });
   }
 
+
   Future uploadPic(BuildContext context) async {
     String fileName = DateTime.now().toString();
     // basename(_image.path);
@@ -529,6 +565,7 @@ class textField extends StatelessWidget {
   final Icon icon;
   final padding;
   final TextInputType type;
+
   var ValueTobeValidate;
   final Function callback;
 
@@ -537,6 +574,7 @@ class textField extends StatelessWidget {
       this.icon,
       this.padding,
       this.type,
+
       this.ValueTobeValidate,
       this.callback});
 

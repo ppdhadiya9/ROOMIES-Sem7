@@ -26,22 +26,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
   FirebaseAuth _auth2 = FirebaseAuth.instance;
 
   User user;
-  var x;
-  var y;
-  var z;
+  var userEmail;
+  var userDisplayname;
+  var userId;
+  var userPhoto;
 
   List<DrawerList> drawerList;
   @override
   void initState() {
     user = _auth2.currentUser;
-    x = user.email;
-    y = user.displayName;
-    z = user.uid;
+    userEmail = user.email;
+    userDisplayname = user.displayName;
+    userId = user.uid;
+    userPhoto = user.photoURL;
     super.initState();
     setDrawerListArray();
-    print(
-        "--------------------------------------------------------------------------");
-    print(y);
   }
 
   void setDrawerListArray() {
@@ -119,23 +118,37 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             child: ClipRRect(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(60.0)),
-                              child: Image.asset('assets/images/userImage.png'),
+                              child: ("$userPhoto" != null)
+                                  ? Image.network(
+                                      "$userPhoto",
+                                      fit: BoxFit.fill,
+                                    )
+                                  : Image.asset('assets/images/userImage.png'),
                             ),
                           ),
                         ),
                       );
                     },
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 8, left: 4),
-                    child: Text(
-                      'Chris Hemsworth',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.grey,
-                        fontSize: 18,
-                      ),
-                    ),
+                    child: ("$userDisplayname" != null)
+                        ? Text(
+                            "$userDisplayname",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.grey,
+                              fontSize: 18,
+                            ),
+                          )
+                        : Text(
+                            "$userEmail",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.grey,
+                              fontSize: 18,
+                            ),
+                          ),
                   ),
                 ],
               ),
@@ -183,14 +196,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       color: Colors.red,
                     ),
                     onTap: () async {
-                      ///SharedPreferences prefs;
-                      ////await GoogleSignIn().signOut();
+                      SharedPreferences prefs;
+                      await GoogleSignIn().signOut();
                       await FirebaseAuth.instance
                           .signOut()
                           .then((value) async => {
-                                /// prefs =
-                                ///await SharedPreferences.getInstance(),
-                                ///prefs.remove('email'),
+                                prefs = await SharedPreferences.getInstance(),
+                                prefs.remove('email'),
                               });
 
                       ///Navigator.of(context).pop(true);
