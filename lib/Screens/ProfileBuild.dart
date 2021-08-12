@@ -90,9 +90,20 @@ class _ProfilePageState extends State<ProfilePage>
       profileBuildingFormkey.currentState.save();
 
       await upload_image();
-
       var x = user.uid;
       await user.updateProfile(displayName: _username, photoURL: _profile_id);
+
+      firebase_storage.Reference firebaseStorageRef2 = firebase_storage
+          .FirebaseStorage.instance
+          .ref()
+          .child('/Userphoto/$fileName2');
+      var profile_id = await firebaseStorageRef2.getDownloadURL();
+          'Room_doc_id': '$_room_doc_id',
+          'Profile_Photo_Url': '$profile_id',
+
+      print(_username);
+      var x = user.uid;
+      user.updateProfile(displayName: _username);
 
       CollectionReference col = db.collection('/Users');
       Future<void> adduser() {
@@ -110,9 +121,6 @@ class _ProfilePageState extends State<ProfilePage>
           'Profile_Photo_Url': '$_profile_id',
         });
       }
-
-      ScaffoldMessenger.of(this.context)
-          .showSnackBar(SnackBar(content: Text('Successfully added.......')));
 
       await adduser().whenComplete(() => Navigator.pushReplacement(
           this.context, MaterialPageRoute(builder: (context) => ThisApp())));
@@ -228,6 +236,7 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                     textField(
                       callback: (value) {
+                       callback: (value) {
                         setState(() {
                           _fullName = value;
                         });
@@ -243,6 +252,7 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                     textField(
                       callback: (value) {
+                       callback: (value) {
                         setState(() {
                           _mobno = value;
                         });
@@ -258,6 +268,7 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                     textField(
                       callback: (value) {
+                       callback: (value) {
                         setState(() {
                           _address = value;
                         });
@@ -528,6 +539,25 @@ class _ProfilePageState extends State<ProfilePage>
       print('Image Path $_image');
     });
   }
+
+
+  Future uploadPic(BuildContext context) async {
+    String fileName = DateTime.now().toString();
+    // basename(_image.path);
+
+    firebase_storage.Reference firebaseStorageRef = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child('/Userphoto/$fileName');
+
+    firebase_storage.UploadTask uploadTask =
+        firebaseStorageRef.putFile(i.File(_image.path));
+    firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
+
+    setState(() {
+      print("Profile Picture uploaded");
+    });
+  }
 }
 
 class textField extends StatelessWidget {
@@ -535,6 +565,8 @@ class textField extends StatelessWidget {
   final Icon icon;
   final padding;
   final TextInputType type;
+
+  var ValueTobeValidate;
   final Function callback;
 
   textField(
@@ -542,6 +574,8 @@ class textField extends StatelessWidget {
       this.icon,
       this.padding,
       this.type,
+
+      this.ValueTobeValidate,
       this.callback});
 
   @override
